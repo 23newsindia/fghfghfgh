@@ -7,13 +7,14 @@ class MACP_HTML_Processor {
     private $options;
 
     public function __construct() {
-        $this->minifier = new MACP_HTML_Minifier();
-        $this->options = [
-            'minify_html' => get_option('macp_minify_html', 0),
-            'minify_css' => get_option('macp_minify_css', 0),
-            'minify_js' => get_option('macp_minify_js', 0)
-        ];
-    }
+    $this->minifier = new MACP_HTML_Minifier();
+    $this->options = [
+        'minify_html' => get_option('macp_minify_html', 0),
+        'minify_css' => get_option('macp_minify_css', 0),
+        'minify_js' => get_option('macp_minify_js', 0),
+        'remove_unused_css' => get_option('macp_remove_unused_css', 0) // Add this line
+    ];
+}
 
     public function process($html) {
     if (empty($html)) {

@@ -73,6 +73,43 @@ class MACP_CSS_Optimizer {
     private function get_current_url() {
         return MACP_URL_Helper::get_current_url();
     }
+  
+  
+  public function process_css($css_content, $html = '') {
+    if (empty($css_content)) {
+        return $css_content;
+    }
+
+    // Get settings
+    $should_minify = get_option('macp_minify_css', 0);
+    $should_remove_unused = get_option('macp_remove_unused_css', 0);
+
+    // If both are enabled, minify first then remove unused
+    if ($should_minify && $should_remove_unused) {
+        $minifier = new MACP_CSS_Minifier();
+        $css_content = $minifier->minify($css_content);
+
+        $used_selectors = $this->extractor->extract_used_selectors($html);
+        $css_content = $this->minifier->remove_unused_css($css_content, $used_selectors);
+
+        return $css_content;
+    }
+
+    // If only minify is enabled
+    if ($should_minify) {
+        $minifier = new MACP_CSS_Minifier();
+        return $minifier->minify($css_content);
+    }
+
+    // If only unused CSS removal is enabled
+    if ($should_remove_unused) {
+        $used_selectors = $this->extractor->extract_used_selectors($html);
+        return $this->minifier->remove_unused_css($css_content, $used_selectors);
+    }
+
+    return $css_content;
+}
+
 
     private function replace_css($html, $optimized_css) {
         // Remove original CSS links
